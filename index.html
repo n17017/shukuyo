@@ -3,738 +3,468 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>宿曜早見表｜あなたの「宿」を調べる</title>
+<title>宿曜早見表｜あなたの「宿」と相性を調べる</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #1a1814; --ink-mid: #4a4640; --ink-soft: #8a8480;
+  --paper: #faf8f4; --paper-warm: #f4f0e8;
+  --moon: #c8b89a; --moon-light: #e8dfc8; --moon-pale: #f5f0e6;
+  --accent: #6b5c4a; --accent-soft: #9a8c7c;
+  --border: #ddd8cc; --shadow: rgba(26,24,20,0.08);
+  --warn-bg: #fdf6ec; --warn-border: #e8d4a8; --warn-text: #7a5c2a;
+  --good: #e8f4e8; --good-border: #b8d8b8; --good-text: #3a6a3a;
+}
+body { font-family:'Noto Sans JP',sans-serif; background:var(--paper); color:var(--ink); line-height:1.8; font-size:15px; -webkit-font-smoothing:antialiased; }
+.wrap { max-width:720px; margin:0 auto; padding:0 20px 60px; }
+
+/* ヘッダー */
+.hero { text-align:center; padding:52px 0 36px; border-bottom:1px solid var(--border); margin-bottom:36px; }
+.hero-label { font-family:'Noto Serif JP',serif; font-size:11px; letter-spacing:.25em; color:var(--accent-soft); margin-bottom:14px; display:block; }
+.hero h1 { font-family:'Noto Serif JP',serif; font-size:clamp(20px,5vw,28px); font-weight:400; line-height:1.5; letter-spacing:.05em; margin-bottom:14px; }
+.hero-sub { font-size:13px; color:var(--ink-soft); line-height:2; }
+.moon-deco { width:38px; height:38px; margin:0 auto 18px; opacity:.55; }
+
+/* リード */
+.lead { font-family:'Noto Serif JP',serif; font-size:14px; line-height:2.1; color:var(--ink-mid); margin-bottom:36px; padding:24px 28px; background:var(--moon-pale); border-left:2px solid var(--moon); border-radius:2px; }
+.lead p+p { margin-top:1em; }
+
+/* ステップ */
+.how-title { font-family:'Noto Serif JP',serif; font-size:12px; font-weight:500; letter-spacing:.15em; color:var(--accent); margin-bottom:16px; text-align:center; }
+.steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:36px; }
+.step { background:#fff; border:1px solid var(--border); border-radius:8px; padding:16px 18px; }
+.step-num { font-family:'Noto Serif JP',serif; font-size:11px; color:var(--accent-soft); letter-spacing:.1em; margin-bottom:4px; display:block; }
+.step-text { font-size:12px; color:var(--ink-mid); line-height:1.7; }
+
+/* カード共通 */
+.tool-card { background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:28px; box-shadow:0 2px 14px var(--shadow); }
+.tool-header { background:var(--paper-warm); padding:18px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.tool-header-icon { width:18px; height:18px; opacity:.5; }
+.tool-header-text { font-family:'Noto Serif JP',serif; font-size:13px; color:var(--accent); letter-spacing:.08em; }
+.tool-body { padding:24px; }
+
+/* フィールド */
+.field-row { margin-bottom:18px; }
+.field-row-label { font-size:11px; color:var(--ink-soft); letter-spacing:.12em; margin-bottom:7px; display:block; }
+.field-group { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+.field-label { font-size:11px; color:var(--ink-soft); letter-spacing:.1em; margin-bottom:5px; display:block; }
+.field-select { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:6px; background:var(--paper); color:var(--ink); font-family:'Noto Sans JP',sans-serif; font-size:14px; cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8480' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 11px center; background-color:var(--paper); padding-right:30px; transition:border-color .2s; }
+.field-select:focus { outline:none; border-color:var(--moon); }
+.field-select:disabled { opacity:.4; cursor:default; }
+
+/* 時刻 */
+.time-row { margin-bottom:20px; }
+.time-row-label { font-size:11px; color:var(--ink-soft); letter-spacing:.12em; margin-bottom:7px; display:flex; align-items:center; gap:7px; }
+.optional-badge { font-size:10px; padding:1px 8px; border:1px solid var(--moon); border-radius:10px; color:var(--accent-soft); background:var(--moon-pale); }
+.time-group { display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:end; }
+.time-hint { font-size:11px; color:var(--ink-soft); line-height:1.7; margin-top:7px; padding:9px 13px; background:var(--paper-warm); border-radius:6px; }
+.time-clear-btn { font-size:11px; color:var(--ink-soft); background:none; border:1px solid var(--border); border-radius:6px; padding:9px 12px; cursor:pointer; white-space:nowrap; transition:border-color .2s,color .2s; font-family:'Noto Sans JP',sans-serif; height:40px; }
+.time-clear-btn:hover { border-color:var(--accent-soft); color:var(--accent); }
+
+/* 通知 */
+.notice { display:none; margin-top:10px; padding:11px 15px; border-radius:7px; font-size:12px; line-height:1.8; animation:fadeIn .3s ease; }
+.notice.show { display:block; }
+.notice.warn { background:var(--warn-bg); border:1px solid var(--warn-border); color:var(--warn-text); }
+.notice.info { background:var(--moon-pale); border:1px solid var(--moon-light); color:var(--accent); }
+
+/* ボタン */
+.calc-btn { width:100%; padding:14px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-family:'Noto Serif JP',serif; font-size:14px; letter-spacing:.12em; cursor:pointer; transition:background .2s,transform .1s; margin-bottom:20px; }
+.calc-btn:hover { background:var(--ink); }
+.calc-btn:active { transform:scale(.99); }
+.calc-btn:disabled { opacity:.6; cursor:default; }
+
+/* 結果 */
+.result { display:none; padding:24px; background:var(--moon-pale); border:1px solid var(--moon-light); border-radius:10px; text-align:center; animation:fadeIn .4s ease; margin-top:4px; }
+.result.show { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.result-label { font-size:11px; color:var(--accent-soft); letter-spacing:.2em; margin-bottom:6px; display:block; }
+.result-shuku { font-family:'Noto Serif JP',serif; font-size:clamp(24px,6vw,34px); font-weight:400; color:var(--ink); letter-spacing:.06em; margin-bottom:4px; line-height:1.4; }
+.result-kana { font-size:12px; color:var(--ink-soft); letter-spacing:.15em; margin-bottom:12px; }
+.result-time-badge { display:inline-block; font-size:10px; padding:3px 10px; border-radius:12px; margin-bottom:12px; letter-spacing:.06em; }
+.result-time-badge.with-time { background:#e8f4e8; border:1px solid #b8d8b8; color:#3a6a3a; }
+.result-time-badge.no-time { background:var(--paper-warm); border:1px solid var(--border); color:var(--ink-soft); }
+.result-tags { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:14px; }
+.tag { font-size:11px; padding:4px 12px; border:1px solid var(--moon); border-radius:20px; color:var(--accent); background:#fff; letter-spacing:.05em; }
+.result-desc { font-family:'Noto Serif JP',serif; font-size:13px; color:var(--ink-mid); line-height:2; text-align:left; margin-bottom:10px; }
+.result-note { font-size:11px; color:var(--ink-soft); line-height:1.8; }
+.moon-phase-row { display:flex; align-items:center; gap:8px; justify-content:center; margin-top:14px; padding-top:14px; border-top:1px solid var(--moon-light); }
+.moon-phase-label { font-size:11px; color:var(--ink-soft); letter-spacing:.06em; }
+.moon-phase-name { font-family:'Noto Serif JP',serif; font-size:12px; color:var(--accent); }
+
+/* 相性セクション */
+.compat-section { display:none; margin-top:20px; }
+.compat-section.show { display:block; animation:fadeIn .4s ease; }
+.compat-divider { text-align:center; margin:8px 0 20px; }
+.compat-divider-text { font-family:'Noto Serif JP',serif; font-size:12px; color:var(--accent-soft); letter-spacing:.15em; }
+
+/* 相性ドロップダウン */
+.shuku-select-row { margin-bottom:16px; }
+.shuku-select-label { font-size:11px; color:var(--ink-soft); letter-spacing:.1em; margin-bottom:7px; display:block; }
+
+/* 相性結果 */
+.compat-result { display:none; padding:22px; background:#fff; border:1px solid var(--border); border-radius:10px; animation:fadeIn .4s ease; }
+.compat-result.show { display:block; }
+.compat-kyori { text-align:center; margin-bottom:16px; }
+.kyori-badge { display:inline-block; font-family:'Noto Serif JP',serif; font-size:18px; padding:8px 24px; border-radius:24px; letter-spacing:.06em; }
+.kyori-badge.hana  { background:#fef0f0; border:1px solid #f0b8b8; color:#9a3a3a; }
+.kyori-badge.oya   { background:#e8f4e8; border:1px solid #b8d8b8; color:#3a6a3a; }
+.kyori-badge.tomo  { background:#e8f0fe; border:1px solid #b8c8f0; color:#3a4a9a; }
+.kyori-badge.an    { background:#fef8e8; border:1px solid #e8d8a8; color:#7a5c2a; }
+.kyori-badge.ei    { background:#f5e8fe; border:1px solid #d0b8f0; color:#6a3a9a; }
+.kyori-badge.tai   { background:#e8f8f8; border:1px solid #b8dce0; color:#2a6a70; }
+.kyori-badge.gyo   { background:#fef4e8; border:1px solid #e8c8a0; color:#7a4a2a; }
+.kyori-badge.sei   { background:#fef0e8; border:1px solid #f0c8a8; color:#8a4a2a; }
+.kyori-badge.ki    { background:#f8e8e8; border:1px solid #e0b8b8; color:#8a2a2a; }
+.kyori-badge.sui   { background:#e8e8f8; border:1px solid #b8b8e0; color:#3a3a8a; }
+.kyori-badge.ko    { background:#f0e8f8; border:1px solid #c8b8e0; color:#5a3a8a; }
+.kyori-name { font-family:'Noto Serif JP',serif; font-size:13px; color:var(--ink-soft); margin-top:6px; letter-spacing:.08em; }
+.compat-items { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-top:14px; }
+.compat-item { background:var(--moon-pale); border-radius:8px; padding:14px 12px; text-align:center; }
+.compat-item-icon { font-size:18px; margin-bottom:4px; }
+.compat-item-label { font-size:10px; color:var(--accent-soft); letter-spacing:.08em; margin-bottom:6px; display:block; }
+.compat-item-text { font-family:'Noto Serif JP',serif; font-size:12px; color:var(--ink-mid); line-height:1.8; }
+.compat-note { font-size:11px; color:var(--ink-soft); line-height:1.8; margin-top:14px; padding-top:12px; border-top:1px solid var(--border); text-align:center; }
+
+/* 27宿一覧 */
+.list-section { margin-bottom:44px; }
+.section-title { font-family:'Noto Serif JP',serif; font-size:13px; font-weight:500; color:var(--accent); letter-spacing:.15em; margin-bottom:18px; text-align:center; display:flex; align-items:center; gap:12px; }
+.section-title::before,.section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+.shuku-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:9px; }
+.shuku-item { background:#fff; border:1px solid var(--border); border-radius:8px; padding:13px 15px; transition:border-color .2s,box-shadow .2s; cursor:default; }
+.shuku-item:hover { border-color:var(--moon); box-shadow:0 2px 10px var(--shadow); }
+.shuku-item-name { font-family:'Noto Serif JP',serif; font-size:14px; color:var(--ink); margin-bottom:3px; }
+.shuku-item-kana { font-size:10px; color:var(--ink-soft); letter-spacing:.1em; margin-bottom:7px; }
+.shuku-item-keyword { font-size:11px; color:var(--accent-soft); line-height:1.6; }
+
+/* フッター */
+.footnote { font-size:11px; color:var(--ink-soft); line-height:2; border-top:1px solid var(--border); padding-top:22px; text-align:center; }
+.divider { text-align:center; color:var(--border); letter-spacing:.3em; font-size:12px; margin:28px 0; }
+
+@media(max-width:480px){
+  .field-group { grid-template-columns:1fr; gap:8px; }
+  .time-group  { grid-template-columns:1fr 1fr; }
+  .time-clear-btn { grid-column:1/-1; }
+  .lead { padding:18px; }
+  .tool-body { padding:18px; }
+  .compat-items { grid-template-columns:1fr; }
+}
+
+/* 相性おすすめ3宿 */
+.good-compat { margin-top:18px; padding-top:16px; border-top:1px solid var(--moon-light); text-align:left; }
+.good-compat-title { font-size:11px; color:var(--accent-soft); letter-spacing:.15em; margin-bottom:10px; display:block; text-align:center; }
+.good-compat-list { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.good-compat-item { background:#fff; border:1px solid var(--good-border); border-radius:8px; padding:12px 10px; text-align:center; cursor:pointer; transition:box-shadow .2s,transform .15s; }
+.good-compat-item:hover { box-shadow:0 3px 12px var(--shadow); transform:translateY(-2px); }
+.good-compat-rank { font-size:10px; color:var(--good-text); letter-spacing:.06em; margin-bottom:4px; display:block; }
+.good-compat-name { font-family:'Noto Serif JP',serif; font-size:15px; color:var(--ink); margin-bottom:2px; }
+.good-compat-kana { font-size:10px; color:var(--ink-soft); margin-bottom:6px; display:block; }
+.good-compat-kyori { font-size:11px; color:var(--good-text); background:var(--good); border-radius:10px; padding:2px 8px; display:inline-block; }
+
+/* ポップアップオーバーレイ */
+.popup-overlay { display:none; position:fixed; inset:0; background:rgba(26,24,20,.45); z-index:1000; align-items:center; justify-content:center; padding:20px; }
+.popup-overlay.open { display:flex; animation:fadeIn .2s ease; }
+.popup-card { background:var(--paper); border-radius:16px; padding:32px 28px; max-width:400px; width:100%; position:relative; box-shadow:0 8px 40px rgba(26,24,20,.18); animation:popIn .25s ease; }
+@keyframes popIn { from{opacity:0;transform:scale(.94)} to{opacity:1;transform:scale(1)} }
+.popup-close { position:absolute; top:16px; right:18px; background:none; border:none; font-size:20px; color:var(--ink-soft); cursor:pointer; line-height:1; padding:4px; }
+.popup-close:hover { color:var(--ink); }
+.popup-shuku { font-family:'Noto Serif JP',serif; font-size:28px; font-weight:400; color:var(--ink); letter-spacing:.06em; margin-bottom:4px; }
+.popup-kana { font-size:12px; color:var(--ink-soft); letter-spacing:.15em; margin-bottom:14px; display:block; }
+.popup-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.popup-desc { font-family:'Noto Serif JP',serif; font-size:13.5px; color:var(--ink-mid); line-height:2; margin-bottom:14px; }
+.popup-compat-btn { width:100%; padding:11px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-family:'Noto Serif JP',serif; font-size:13px; letter-spacing:.1em; cursor:pointer; transition:background .2s; }
+.popup-compat-btn:hover { background:var(--ink); }
 
-  :root {
-    --ink: #1a1814;
-    --ink-mid: #4a4640;
-    --ink-soft: #8a8480;
-    --paper: #faf8f4;
-    --paper-warm: #f4f0e8;
-    --moon: #c8b89a;
-    --moon-light: #e8dfc8;
-    --moon-pale: #f5f0e6;
-    --accent: #6b5c4a;
-    --accent-soft: #9a8c7c;
-    --border: #ddd8cc;
-    --shadow: rgba(26,24,20,0.08);
-    --warning-bg: #fdf6ec;
-    --warning-border: #e8d4a8;
-    --warning-text: #7a5c2a;
-  }
-
-  body {
-    font-family: 'Noto Sans JP', sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height: 1.8;
-    font-size: 15px;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .wrap {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0 20px 60px;
-  }
-
-  /* ─── ヘッダー ─── */
-  .hero {
-    text-align: center;
-    padding: 56px 0 40px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 40px;
-  }
-
-  .hero-label {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 0.25em;
-    color: var(--accent-soft);
-    margin-bottom: 14px;
-    display: block;
-  }
-
-  .hero h1 {
-    font-family: 'Noto Serif JP', serif;
-    font-size: clamp(22px, 5vw, 30px);
-    font-weight: 400;
-    color: var(--ink);
-    line-height: 1.5;
-    letter-spacing: 0.05em;
-    margin-bottom: 16px;
-  }
-
-  .hero-sub {
-    font-size: 13px;
-    color: var(--ink-soft);
-    letter-spacing: 0.04em;
-    line-height: 1.9;
-  }
-
-  .moon-deco {
-    width: 40px;
-    height: 40px;
-    margin: 0 auto 20px;
-    opacity: 0.55;
-  }
-
-  /* ─── リード文 ─── */
-  .lead {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 14.5px;
-    line-height: 2.1;
-    color: var(--ink-mid);
-    margin-bottom: 40px;
-    padding: 28px 32px;
-    background: var(--moon-pale);
-    border-left: 2px solid var(--moon);
-    border-radius: 2px;
-  }
-
-  .lead p + p { margin-top: 1.1em; }
-
-  /* ─── ステップ説明 ─── */
-  .how-title {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    color: var(--accent);
-    margin-bottom: 20px;
-    text-align: center;
-  }
-
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 40px;
-  }
-
-  .step {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 18px 20px;
-  }
-
-  .step-num {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 11px;
-    color: var(--accent-soft);
-    letter-spacing: 0.1em;
-    margin-bottom: 6px;
-    display: block;
-  }
-
-  .step-text {
-    font-size: 13px;
-    color: var(--ink-mid);
-    line-height: 1.7;
-  }
-
-  /* ─── ツール本体 ─── */
-  .tool-card {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 40px;
-    box-shadow: 0 2px 16px var(--shadow);
-  }
-
-  .tool-header {
-    background: var(--paper-warm);
-    padding: 20px 28px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .tool-header-icon {
-    width: 20px;
-    height: 20px;
-    opacity: 0.5;
-  }
-
-  .tool-header-text {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-  }
-
-  .tool-body { padding: 28px; }
-
-  /* 日付フィールド */
-  .field-row {
-    margin-bottom: 20px;
-  }
-
-  .field-row-label {
-    font-size: 11px;
-    color: var(--ink-soft);
-    letter-spacing: 0.12em;
-    margin-bottom: 8px;
-    display: block;
-  }
-
-  .field-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-  }
-
-  /* 時刻フィールド */
-  .time-row {
-    margin-bottom: 24px;
-  }
-
-  .time-row-label {
-    font-size: 11px;
-    color: var(--ink-soft);
-    letter-spacing: 0.12em;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .optional-badge {
-    font-size: 10px;
-    padding: 1px 8px;
-    border: 1px solid var(--moon);
-    border-radius: 10px;
-    color: var(--accent-soft);
-    letter-spacing: 0.05em;
-    background: var(--moon-pale);
-  }
-
-  .time-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto;
-    gap: 10px;
-    align-items: center;
-  }
-
-  .time-clear-btn {
-    font-size: 11px;
-    color: var(--ink-soft);
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 9px 12px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: border-color 0.2s, color 0.2s;
-    font-family: 'Noto Sans JP', sans-serif;
-  }
-
-  .time-clear-btn:hover {
-    border-color: var(--accent-soft);
-    color: var(--accent);
-  }
-
-  .time-hint {
-    font-size: 11px;
-    color: var(--ink-soft);
-    line-height: 1.7;
-    margin-top: 8px;
-    padding: 10px 14px;
-    background: var(--paper-warm);
-    border-radius: 6px;
-  }
-
-  /* 境界線注意表示 */
-  .boundary-notice {
-    display: none;
-    margin-top: 10px;
-    padding: 12px 16px;
-    background: var(--warning-bg);
-    border: 1px solid var(--warning-border);
-    border-radius: 8px;
-    font-size: 12px;
-    color: var(--warning-text);
-    line-height: 1.8;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .boundary-notice.show { display: block; }
-
-  .field-label {
-    font-size: 11px;
-    color: var(--ink-soft);
-    letter-spacing: 0.1em;
-    margin-bottom: 6px;
-    display: block;
-  }
-
-  .field-select {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8480' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-color: var(--paper);
-    padding-right: 32px;
-    transition: border-color 0.2s;
-  }
-
-  .field-select:focus {
-    outline: none;
-    border-color: var(--moon);
-  }
-
-  .calc-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-family: 'Noto Serif JP', serif;
-    font-size: 14px;
-    letter-spacing: 0.12em;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    margin-bottom: 24px;
-  }
-
-  .calc-btn:hover { background: var(--ink); }
-  .calc-btn:active { transform: scale(0.99); }
-
-  /* ─── 結果 ─── */
-  .result {
-    display: none;
-    padding: 28px;
-    background: var(--moon-pale);
-    border: 1px solid var(--moon-light);
-    border-radius: 10px;
-    text-align: center;
-    animation: fadeIn 0.4s ease;
-  }
-
-  .result.show { display: block; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .result-label {
-    font-size: 11px;
-    color: var(--accent-soft);
-    letter-spacing: 0.2em;
-    margin-bottom: 8px;
-    display: block;
-  }
-
-  .result-shuku {
-    font-family: 'Noto Serif JP', serif;
-    font-size: clamp(26px, 6vw, 36px);
-    font-weight: 400;
-    color: var(--ink);
-    letter-spacing: 0.06em;
-    margin-bottom: 4px;
-    line-height: 1.4;
-  }
-
-  .result-kana {
-    font-size: 12px;
-    color: var(--ink-soft);
-    letter-spacing: 0.15em;
-    margin-bottom: 16px;
-  }
-
-  /* 時刻考慮バッジ */
-  .result-time-badge {
-    display: inline-block;
-    font-size: 10px;
-    padding: 3px 10px;
-    border-radius: 12px;
-    margin-bottom: 14px;
-    letter-spacing: 0.06em;
-  }
-
-  .result-time-badge.with-time {
-    background: #e8f4e8;
-    border: 1px solid #b8d8b8;
-    color: #3a6a3a;
-  }
-
-  .result-time-badge.no-time {
-    background: var(--paper-warm);
-    border: 1px solid var(--border);
-    color: var(--ink-soft);
-  }
-
-  .result-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    margin-bottom: 16px;
-  }
-
-  .tag {
-    font-size: 11px;
-    padding: 4px 12px;
-    border: 1px solid var(--moon);
-    border-radius: 20px;
-    color: var(--accent);
-    background: #fff;
-    letter-spacing: 0.05em;
-  }
-
-  .result-desc {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 13.5px;
-    color: var(--ink-mid);
-    line-height: 2;
-    text-align: left;
-    margin-bottom: 12px;
-  }
-
-  .result-note {
-    font-size: 11px;
-    color: var(--ink-soft);
-    line-height: 1.8;
-  }
-
-  /* 月齢インジケーター */
-  .moon-phase-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--moon-light);
-  }
-
-  .moon-phase-label {
-    font-size: 11px;
-    color: var(--ink-soft);
-    letter-spacing: 0.06em;
-  }
-
-  .moon-phase-icon {
-    font-size: 18px;
-    line-height: 1;
-  }
-
-  .moon-phase-name {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 12px;
-    color: var(--accent);
-  }
-
-  /* ─── 27宿一覧 ─── */
-  .list-section { margin-bottom: 48px; }
-
-  .section-title {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--accent);
-    letter-spacing: 0.15em;
-    margin-bottom: 20px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .section-title::before,
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .shuku-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-    gap: 10px;
-  }
-
-  .shuku-item {
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    cursor: default;
-  }
-
-  .shuku-item:hover {
-    border-color: var(--moon);
-    box-shadow: 0 2px 10px var(--shadow);
-  }
-
-  .shuku-item-name {
-    font-family: 'Noto Serif JP', serif;
-    font-size: 15px;
-    color: var(--ink);
-    margin-bottom: 3px;
-  }
-
-  .shuku-item-kana {
-    font-size: 10px;
-    color: var(--ink-soft);
-    letter-spacing: 0.1em;
-    margin-bottom: 8px;
-  }
-
-  .shuku-item-keyword {
-    font-size: 11px;
-    color: var(--accent-soft);
-    line-height: 1.6;
-  }
-
-  /* ─── フッター注記 ─── */
-  .footnote {
-    font-size: 12px;
-    color: var(--ink-soft);
-    line-height: 2;
-    border-top: 1px solid var(--border);
-    padding-top: 24px;
-    text-align: center;
-  }
-
-  .divider {
-    text-align: center;
-    color: var(--border);
-    letter-spacing: 0.3em;
-    font-size: 12px;
-    margin: 32px 0;
-  }
-
-  @media (max-width: 480px) {
-    .field-group { grid-template-columns: 1fr; gap: 8px; }
-    .time-group  { grid-template-columns: 1fr 1fr; }
-    .time-clear-btn { grid-column: 1 / -1; }
-    .lead { padding: 20px; }
-    .tool-body { padding: 20px; }
-  }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- ヘッダー -->
-  <div class="hero">
-    <svg class="moon-deco" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="20" cy="20" r="14" stroke="#c8b89a" stroke-width="1"/>
-      <path d="M20 6 C12 10 10 20 14 30 C8 26 6 18 10 12 C13 8 17 6 20 6Z" fill="#c8b89a" opacity="0.6"/>
-      <circle cx="20" cy="20" r="2" fill="#c8b89a" opacity="0.4"/>
-    </svg>
-    <span class="hero-label">SHUKUYO HAYAMI-HYO</span>
-    <h1>生年月日から調べる<br>あなたの「宿」</h1>
-    <p class="hero-sub">
-      月がどこにいたか、で決まる27種類の分類。<br>
-      星座よりも、ずっと内側のあなたを映す。
-    </p>
-  </div>
-
-  <!-- リード文 -->
-  <div class="lead">
-    <p>星座占いは、太陽の位置を見ている。だから、表の顔に近い。社会的な自分、人に見せているキャラクター、みたいな部分。</p>
-    <p>宿曜は、月の位置を見る。月は感情の星だ。感情の動き方、愛し方の癖、誰かと深くつながるときのパターン——そういう、内側の話をするのが宿曜占いだ。</p>
-    <p>空海が1200年前に日本に持ち帰ったとされる密教の占星術。月の軌道を27に分けて、あなたが生まれた瞬間に月がどこにいたか。それが「宿（しゅく）」。</p>
-    <p>下のツールで、生年月日を入れてみてほしい。時間がわかる人は時間も入れると、より正確に出る。</p>
-  </div>
-
-  <!-- 使い方ステップ -->
-  <p class="how-title">STEP</p>
-  <div class="steps">
-    <div class="step">
-      <span class="step-num">01</span>
-      <p class="step-text">生年月日を選ぶ</p>
-    </div>
-    <div class="step">
-      <span class="step-num">02</span>
-      <p class="step-text">出生時間を入れる（任意）</p>
-    </div>
-    <div class="step">
-      <span class="step-num">03</span>
-      <p class="step-text">「調べる」を押す</p>
-    </div>
-    <div class="step">
-      <span class="step-num">04</span>
-      <p class="step-text">あなたの宿が表示される</p>
-    </div>
-  </div>
-
-  <!-- 計算ツール -->
-  <div class="tool-card">
-    <div class="tool-header">
-      <svg class="tool-header-icon" viewBox="0 0 20 20" fill="none">
-        <circle cx="10" cy="10" r="7" stroke="#c8b89a" stroke-width="1"/>
-        <path d="M10 3C7 5 6 8 7.5 12" stroke="#c8b89a" stroke-width="1" stroke-linecap="round"/>
-      </svg>
-      <span class="tool-header-text">宿を調べる</span>
-    </div>
-    <div class="tool-body">
-
-      <!-- 生年月日 -->
-      <div class="field-row">
-        <span class="field-row-label">生年月日</span>
-        <div class="field-group">
-          <div>
-            <span class="field-label">年</span>
-            <select class="field-select" id="sel-year"></select>
-          </div>
-          <div>
-            <span class="field-label">月</span>
-            <select class="field-select" id="sel-month"></select>
-          </div>
-          <div>
-            <span class="field-label">日</span>
-            <select class="field-select" id="sel-day"></select>
-          </div>
-        </div>
-      </div>
-
-      <!-- 出生時間（任意） -->
-      <div class="time-row">
-        <span class="time-row-label">
-          出生時間
-          <span class="optional-badge">任意</span>
-        </span>
-        <div class="time-group">
-          <div>
-            <span class="field-label">時</span>
-            <select class="field-select" id="sel-hour">
-              <option value="">--</option>
-            </select>
-          </div>
-          <div>
-            <span class="field-label">分</span>
-            <select class="field-select" id="sel-min" disabled>
-              <option value="">--</option>
-            </select>
-          </div>
-          <button class="time-clear-btn" onclick="clearTime()">時間をクリア</button>
-        </div>
-        <p class="time-hint">
-          時間を入力すると、宿の境界付近での精度が上がります。<br>
-          出生時間が不明な場合は空白のまま「調べる」を押してください。
-        </p>
-        <!-- 境界線付近の注意表示 -->
-        <div class="boundary-notice" id="boundary-notice"></div>
-      </div>
-
-      <button class="calc-btn" onclick="calcShuku()">調べる</button>
-
-      <!-- 結果 -->
-      <div class="result" id="result-box">
-        <span class="result-label">あなたの宿</span>
-        <div class="result-shuku" id="res-name">—</div>
-        <div class="result-kana" id="res-kana">—</div>
-        <span class="result-time-badge" id="res-time-badge"></span>
-        <div class="result-tags" id="res-tags"></div>
-        <p class="result-desc" id="res-desc">—</p>
-        <p class="result-note" id="res-note"></p>
-        <!-- 月齢 -->
-        <div class="moon-phase-row" id="moon-phase-row">
-          <span class="moon-phase-label">生まれた日の月</span>
-          <span class="moon-phase-icon" id="moon-phase-icon">🌙</span>
-          <span class="moon-phase-name" id="moon-phase-name">—</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="divider">・ ・ ・</div>
-
-  <!-- 27宿一覧 -->
-  <div class="list-section">
-    <p class="section-title">27宿 一覧</p>
-    <div class="shuku-grid" id="shuku-grid"></div>
-  </div>
-
-  <!-- 注記 -->
-  <div class="footnote">
-    <p>本命宿は「旧暦（太陰太陽暦）の生年月日」をもとに、月宿傍通暦（宿曜経の伝統的な対応表）で算出しています。</p>
-    <p>旧暦変換には Meeus式の朔（新月）計算と、冬至を含む朔を旧暦11月とする天保暦方式を採用しています。</p>
-    <p>出生時間を入力すると、旧暦の日付またぎ（深夜〜早朝生まれ）での精度が向上します。</p>
-    <p>閏月が含まれる場合や年末年始付近の一部の日付では、前後1日の誤差が生じることがあります。</p>
-    <p style="margin-top:12px; color: #9a8c7c;">© 星くずモナカ / note.com/stardust104</p>
-  </div>
-
+<!-- ヘッダー -->
+<div class="hero">
+  <svg class="moon-deco" viewBox="0 0 40 40" fill="none">
+    <circle cx="20" cy="20" r="14" stroke="#c8b89a" stroke-width="1"/>
+    <path d="M20 6 C12 10 10 20 14 30 C8 26 6 18 10 12 C13 8 17 6 20 6Z" fill="#c8b89a" opacity="0.6"/>
+    <circle cx="20" cy="20" r="2" fill="#c8b89a" opacity="0.4"/>
+  </svg>
+  <span class="hero-label">TSUKIYOMI MONAKA / 宿曜早見表</span>
+  <h1>生年月日から調べる<br>あなたの「宿」と相性</h1>
+  <p class="hero-sub">
+    月がどこにいたか、で決まる27種類の分類です。<br>
+    星座よりも、ずっと内側のあなたを映します。
+  </p>
 </div>
 
+<!-- リード文 -->
+<div class="lead">
+  <p>星座占いは、太陽の位置を見ています。だから、表の顔に近いんです。社会的な自分、人に見せているキャラクターのような部分。</p>
+  <p>宿曜は、月の位置を見ます。月は感情の星です。感情の動き方、愛し方の癖、誰かと深くつながるときのパターン——そういう、内側の話をするのが宿曜占いです。</p>
+  <p>空海が1200年前に日本に持ち帰ったとされる密教の占星術。月の軌道を27に分けて、あなたが生まれた瞬間に月がどこにいたか。それが「宿（しゅく）」です。</p>
+  <p>下のツールで生年月日を入力してみてください。気になる方の相性も、続けてチェックできます。</p>
+</div>
+
+<!-- ステップ -->
+<p class="how-title">STEP</p>
+<div class="steps">
+  <div class="step"><span class="step-num">01</span><p class="step-text">生年月日を選んでください</p></div>
+  <div class="step"><span class="step-num">02</span><p class="step-text">出生時間を入れると より正確になります（任意）</p></div>
+  <div class="step"><span class="step-num">03</span><p class="step-text">「調べる」を押してください</p></div>
+  <div class="step"><span class="step-num">04</span><p class="step-text">相手の宿を選ぶと相性も確認できます</p></div>
+</div>
+
+<!-- ── 自分の宿ツール ── -->
+<div class="tool-card">
+  <div class="tool-header">
+    <svg class="tool-header-icon" viewBox="0 0 20 20" fill="none">
+      <circle cx="10" cy="10" r="7" stroke="#c8b89a" stroke-width="1"/>
+      <path d="M10 3C7 5 6 8 7.5 12" stroke="#c8b89a" stroke-width="1" stroke-linecap="round"/>
+    </svg>
+    <span class="tool-header-text">あなたの宿を調べる</span>
+  </div>
+  <div class="tool-body">
+
+    <!-- 生年月日 -->
+    <div class="field-row">
+      <span class="field-row-label">生年月日</span>
+      <div class="field-group">
+        <div><span class="field-label">年</span><select class="field-select" id="sel-year"></select></div>
+        <div><span class="field-label">月</span><select class="field-select" id="sel-month"></select></div>
+        <div><span class="field-label">日</span><select class="field-select" id="sel-day"></select></div>
+      </div>
+    </div>
+
+    <!-- 出生時間 -->
+    <div class="time-row">
+      <span class="time-row-label">出生時間 <span class="optional-badge">任意</span></span>
+      <div class="time-group">
+        <div><span class="field-label">時</span><select class="field-select" id="sel-hour"><option value="">--</option></select></div>
+        <div><span class="field-label">分</span><select class="field-select" id="sel-min" disabled><option value="">--</option></select></div>
+        <button class="time-clear-btn" onclick="clearTime()">クリア</button>
+      </div>
+      <p class="time-hint">時間を入れると、宿の境界付近での精度が上がります。不明な場合は空白のまま調べてください。</p>
+      <div class="notice warn" id="boundary-notice"></div>
+    </div>
+
+    <button class="calc-btn" id="calc-btn" onclick="calcShuku()">調べる</button>
+
+    <!-- 自分の結果 -->
+    <div class="result" id="result-box">
+      <span class="result-label">あなたの宿</span>
+      <div class="result-shuku" id="res-name">—</div>
+      <div class="result-kana" id="res-kana">—</div>
+      <span class="result-time-badge" id="res-time-badge"></span>
+      <div class="result-tags" id="res-tags"></div>
+      <p class="result-desc" id="res-desc">—</p>
+      <p class="result-note" id="res-note"></p>
+      <div class="moon-phase-row">
+        <span class="moon-phase-label">生まれた日の月</span>
+        <span id="moon-phase-icon">🌙</span>
+        <span class="moon-phase-name" id="moon-phase-name">—</span>
+      </div>
+      <!-- 相性おすすめ3宿 -->
+      <div class="good-compat" id="good-compat">
+        <span class="good-compat-title">✦ 相性のいい宿 TOP 3 ✦</span>
+        <div class="good-compat-list" id="good-compat-list"></div>
+      </div>
+    </div>
+
+    <!-- 相性セクション -->
+    <div class="compat-section" id="compat-section">
+      <div class="compat-divider">
+        <span class="compat-divider-text">・ 相性を調べる ・</span>
+      </div>
+
+      <div class="shuku-select-row">
+        <span class="shuku-select-label">気になる方の宿を選んでください</span>
+        <select class="field-select" id="partner-shuku" onchange="calcCompat()">
+          <option value="">── 宿を選んでください ──</option>
+        </select>
+      </div>
+
+      <div class="compat-result" id="compat-result">
+        <div class="compat-kyori">
+          <div class="kyori-badge" id="kyori-badge">—</div>
+          <div class="kyori-name" id="kyori-name">—</div>
+        </div>
+        <div class="compat-items">
+          <div class="compat-item">
+            <div class="compat-item-icon">💗</div>
+            <span class="compat-item-label">恋愛・パートナー</span>
+            <p class="compat-item-text" id="compat-love">—</p>
+          </div>
+          <div class="compat-item">
+            <div class="compat-item-icon">🤝</div>
+            <span class="compat-item-label">友人・日常</span>
+            <p class="compat-item-text" id="compat-friend">—</p>
+          </div>
+          <div class="compat-item">
+            <div class="compat-item-icon">💼</div>
+            <span class="compat-item-label">仕事・チーム</span>
+            <p class="compat-item-text" id="compat-work">—</p>
+          </div>
+        </div>
+        <p class="compat-note" id="compat-note"></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider">・ ・ ・</div>
+
+<!-- 27宿一覧 -->
+<div class="list-section">
+  <p class="section-title">27宿 一覧</p>
+  <div class="shuku-grid" id="shuku-grid"></div>
+</div>
+
+<div class="footnote">
+  <p>本命宿は「旧暦（太陰太陽暦）の生年月日」をもとに、月宿傍通暦（宿曜経の伝統的な対応表）で算出しています。</p>
+  <p>出生時間を入力すると、旧暦の日付またぎでの精度が向上します。閏月付近など一部の日付では前後1日の誤差が生じることがあります。</p>
+  <p style="margin-top:10px;color:#9a8c7c;">© 月読モナカ</p>
+</div>
+
+<!-- ポップアップ -->
+<div class="popup-overlay" id="popup-overlay" onclick="closePopup(event)">
+  <div class="popup-card">
+    <button class="popup-close" onclick="closePopupDirect()">✕</button>
+    <div class="popup-shuku" id="popup-name">—</div>
+    <span class="popup-kana" id="popup-kana">—</span>
+    <div class="popup-tags" id="popup-tags"></div>
+    <p class="popup-desc" id="popup-desc">—</p>
+    <button class="popup-compat-btn" id="popup-compat-btn" onclick="selectFromPopup()">この宿との相性を調べる</button>
+  </div>
+</div>
+
+</div><!-- /wrap -->
 <script>
-// ─── 27宿データ ───
+// ════════════════════════════════
+// 27宿データ
+// ════════════════════════════════
 const SHUKU_DATA = [
-  { name:"角宿",  kana:"かくしゅく",   tags:["社交性◎","人当たりよし","好かれやすい"],      desc:"誰とでも普通に話せて、自然と輪の中心にいる。クセが少なくて、人から見ると「付き合いやすい人」に見えることが多い。でも、本人の内側はわりと繊細だったりする。",                             note:"" },
-  { name:"亢宿",  kana:"こうしゅく",   tags:["観察力◎","冷静","本音は見せない"],            desc:"表面は穏やかだけど、実はよく観察している。人のことをよく見ていて、感情を外に出すのが得意じゃないぶん、信頼した相手にはとことん深くなる。",                                                 note:"" },
-  { name:"氐宿",  kana:"ていしゅく",   tags:["誠実","粘り強い","感情を溜め込む"],            desc:"約束を守る人。誠実で真面目。ただ、感情を溜め込みやすい面があって、いつの間にか一人で抱えすぎていることがある。",                                                                             note:"" },
-  { name:"房宿",  kana:"ぼうしゅく",   tags:["リーダー気質","行動力","カリスマ"],            desc:"自然とリーダーポジションになりやすい。決断が早くて、人をまとめる力がある。スピード感のある人で、話が早い。",                                                                                 note:"" },
-  { name:"心宿",  kana:"しんしゅく",   tags:["感受性◎","情が深い","感情の波が大きい"],      desc:"感情の振れ幅が大きい。喜びも悲しみも、人より大きく感じる。情が深いぶん、人間関係に傷つくことも多い。でもそれが、この宿の深さでもある。",                                                   note:"" },
-  { name:"尾宿",  kana:"びしゅく",     tags:["粘り強い","こだわり","秘めた情熱"],            desc:"見た目は静かに見えるけど、内側に静かな炎がある。一度決めたことをやり抜く力があって、表に出ないぶんだけエネルギーが深い。",                                                                   note:"" },
-  { name:"箕宿",  kana:"きしゅく",     tags:["自由人","マイペース","独特の感性"],            desc:"自分のペースがある。合わせすぎると疲れてしまう、正直な人。人から「変わってるね」と言われることがあるかもしれないけど、それがこの宿の個性だ。",                                               note:"" },
-  { name:"斗宿",  kana:"としゅく",     tags:["計画的","慎重","完璧主義ぎみ"],                desc:"段取りを考えてから動く人。計画を立てることが得意で、抜け漏れをなくすことに安心感を覚える。",                                                                                                   note:"" },
-  { name:"女宿",  kana:"じょしゅく",   tags:["細やか","気配り","自己犠牲ぎみ"],              desc:"人の気持ちに敏感で、場の空気をよく読む。相手に合わせすぎてしまうことがあって、気づいたら自分が後回しになっていた——というパターンに注意。",                                                   note:"" },
-  { name:"虚宿",  kana:"きょしゅく",   tags:["夢想家","クリエイティブ","浮世離れ"],          desc:"現実よりも頭の中が豊か、という人が多い。想像力があって、創造的。少し夢見がちなところがあるけど、それが魅力でもある。",                                                                       note:"" },
-  { name:"危宿",  kana:"きしゅく（危）",tags:["享楽的","人好き","瞬発力"],                   desc:"楽しいことが好きで、直感で動く。その場その場を全力で楽しむ才能がある。人と一緒にいることでエネルギーをもらうタイプ。",                                                                       note:"" },
-  { name:"室宿",  kana:"しつしゅく",   tags:["守りたい気持ち","献身","感情移入"],            desc:"誰かのために動ける人。相手を守りたいという気持ちが強い。ただ、自分のことを後回しにしやすいので、無理しすぎに注意。",                                                                         note:"" },
-  { name:"壁宿",  kana:"へきしゅく",   tags:["孤独耐性◎","哲学的","自分軸がある"],          desc:"一人でいることが苦じゃない。自分の世界を持っていて、深く考えることが好き。表面上はクールに見えても、内側にはちゃんと温かさがある。",                                                         note:"" },
-  { name:"奎宿",  kana:"けいしゅく",   tags:["几帳面","真面目","完遂力"],                    desc:"やると決めたことを最後まで仕上げる。途中で投げ出すのが嫌いなタイプで、丁寧さが滲み出る。",                                                                                                     note:"" },
-  { name:"婁宿",  kana:"ろうしゅく",   tags:["温かい","縁をつなぐ","人の輪の中心"],          desc:"自然と人が集まってくる。温かみがある人柄で、誰かを紹介したり、つなげたりするのが上手。人の縁の中心にいることが多い。",                                                                       note:"" },
-  { name:"胃宿",  kana:"いしゅく",     tags:["財運◎","コツコツ型","現実的"],                 desc:"コツコツ積み上げるのが得意。派手ではないけど、地道に実績を作っていく人。お金の管理や現実的な計画に強い。",                                                                                   note:"" },
-  { name:"昴宿",  kana:"ぼうしゅく（昴）",tags:["美意識高め","センスあり","感性鋭い"],       desc:"センスがいい。美しいものに敏感で、見た目にこだわりがある。アートやファッション、空間など、感性を生かした分野が得意。",                                                                       note:"" },
-  { name:"畢宿",  kana:"ひつしゅく",   tags:["実行力","頑固さ","一途"],                      desc:"決めたら突き進む。融通が利かない面もあるけど、それが一途さでもある。信頼した相手にはとことん誠実。",                                                                                         note:"" },
-  { name:"觜宿",  kana:"ししゅく",     tags:["知的","話し上手","好奇心旺盛"],                desc:"話していて面白い人。知識の引き出しが多くて、会話の幅が広い。好奇心が旺盛で、いろんなことに興味を持てる。",                                                                                   note:"" },
-  { name:"参宿",  kana:"さんしゅく",   tags:["戦略家","負けず嫌い","勝負強い"],              desc:"勝ちにこだわる。何かに取り組むとき、自然と戦略を考えてしまう。負けず嫌いなのを自覚している人が多い。",                                                                                       note:"" },
-  { name:"井宿",  kana:"せいしゅく（井）",tags:["多才","飽き性","エネルギッシュ"],           desc:"エネルギーが多くて、いくつものことを同時にこなせる。ただ、飽きやすいところもあって、常に新しい刺激を求めている。",                                                                           note:"" },
-  { name:"鬼宿",  kana:"きしゅく（鬼）",tags:["直感◎","霊的感性","ミステリアス"],            desc:"直感が鋭い。何かを感じ取る能力が強めで、説明できないけどわかる、ということが多い。ミステリアスな雰囲気を持っていることが多い。",                                                             note:"" },
-  { name:"柳宿",  kana:"りゅうしゅく", tags:["こだわり強め","繊細","芸術家気質"],            desc:"細部にこだわる。人が気にしないような小さな違いに気づいてしまう。繊細さが才能でもあり、しんどさにもなる。",                                                                                   note:"" },
-  { name:"星宿",  kana:"せいしゅく（星）",tags:["華がある","目立つ","自己表現◎"],            desc:"どこにいても目に入る人。自分を表現することが好きで、人前でも臆せずいられる。",                                                                                                               note:"" },
-  { name:"張宿",  kana:"ちょうしゅく", tags:["楽天的","包容力","人を癒す"],                  desc:"一緒にいると、なんか楽になる——そう思われやすい人。明るくて、人を受け入れる懐の広さがある。",                                                                                                 note:"" },
-  { name:"翼宿",  kana:"よくしゅく",   tags:["理想主義","感受性◎","繊細"],                   desc:"理想が高い。こうあってほしい、という気持ちが強く、現実とのギャップに傷つくこともある。その感受性の深さが、この宿の豊かさだ。",                                                               note:"" },
-  { name:"軫宿",  kana:"しんしゅく（軫）",tags:["聴く力◎","誠実","縁の下の力持ち"],         desc:"話を聴くのが上手い。人の話にちゃんと乗っかれる人。誠実で、表に出ないところで周りを支えていることが多い。",                                                                                   note:"" },
+  { name:"角宿", kana:"かくしゅく", tags:["社交性◎","人当たりよし","好かれやすい"], desc:"誰とでも普通に話せて、自然と輪の中心にいます。クセが少なくて「付き合いやすい」と思われやすいですが、本人の内側はわりと繊細だったりします。" },
+  { name:"亢宿", kana:"こうしゅく", tags:["観察力◎","冷静","本音は見せない"], desc:"表面は穏やかですが、実はよく観察しています。感情を外に出すのが得意じゃないぶん、信頼した相手にはとことん深くなります。" },
+  { name:"氐宿", kana:"ていしゅく", tags:["誠実","粘り強い","感情を溜め込む"], desc:"約束を守る誠実な方です。ただ、感情を溜め込みやすい面があって、いつの間にか一人で抱えすぎていることがあります。" },
+  { name:"房宿", kana:"ぼうしゅく", tags:["リーダー気質","行動力","カリスマ"], desc:"自然とリーダーポジションになりやすいです。決断が早くて、人をまとめる力があります。スピード感があって、話が早いです。" },
+  { name:"心宿", kana:"しんしゅく", tags:["感受性◎","情が深い","感情の波が大きい"], desc:"感情の振れ幅が大きいです。喜びも悲しみも、人より大きく感じます。情が深いぶん、人間関係に傷つくことも多いですが、それがこの宿の深さでもあります。" },
+  { name:"尾宿", kana:"びしゅく", tags:["粘り強い","こだわり","秘めた情熱"], desc:"見た目は静かですが、内側に静かな炎があります。一度決めたことをやり抜く力があって、表に出ないぶんだけエネルギーが深いです。" },
+  { name:"箕宿", kana:"きしゅく", tags:["自由人","マイペース","独特の感性"], desc:"自分のペースがある正直な方です。合わせすぎると疲れてしまいます。「変わってるね」と言われることもあるかもしれませんが、それがこの宿の個性です。" },
+  { name:"斗宿", kana:"としゅく", tags:["計画的","慎重","完璧主義ぎみ"], desc:"段取りを考えてから動く方です。計画を立てることが得意で、抜け漏れをなくすことに安心感を覚えます。" },
+  { name:"女宿", kana:"じょしゅく", tags:["細やか","気配り","自己犠牲ぎみ"], desc:"人の気持ちに敏感で、場の空気をよく読みます。相手に合わせすぎてしまうことがあって、気づいたら自分が後回しになっているパターンに注意です。" },
+  { name:"虚宿", kana:"きょしゅく", tags:["夢想家","クリエイティブ","浮世離れ"], desc:"現実よりも頭の中が豊かな方が多いです。想像力があって、創造的です。少し夢見がちなところがありますが、それが魅力でもあります。" },
+  { name:"危宿", kana:"きしゅく（危）", tags:["享楽的","人好き","瞬発力"], desc:"楽しいことが好きで、直感で動きます。その場を全力で楽しむ才能があります。人と一緒にいることでエネルギーをもらうタイプです。" },
+  { name:"室宿", kana:"しつしゅく", tags:["守りたい気持ち","献身","感情移入"], desc:"誰かのために動ける方です。相手を守りたいという気持ちが強いです。ただ、自分のことを後回しにしやすいので、無理しすぎには注意してください。" },
+  { name:"壁宿", kana:"へきしゅく", tags:["孤独耐性◎","哲学的","自分軸がある"], desc:"一人でいることが苦ではありません。自分の世界を持っていて、深く考えることが好きです。表面上はクールに見えても、内側にはちゃんと温かさがあります。" },
+  { name:"奎宿", kana:"けいしゅく", tags:["几帳面","真面目","完遂力"], desc:"やると決めたことを最後まで仕上げます。途中で投げ出すのが嫌いなタイプで、丁寧さが滲み出ます。" },
+  { name:"婁宿", kana:"ろうしゅく", tags:["温かい","縁をつなぐ","人の輪の中心"], desc:"自然と人が集まってきます。温かみがある人柄で、誰かを紹介したり、つなげたりするのが上手です。人の縁の中心にいることが多いです。" },
+  { name:"胃宿", kana:"いしゅく", tags:["財運◎","コツコツ型","現実的"], desc:"コツコツ積み上げるのが得意です。派手ではないですが、地道に実績を作っていきます。お金の管理や現実的な計画に強いです。" },
+  { name:"昴宿", kana:"ぼうしゅく（昴）", tags:["美意識高め","センスあり","感性鋭い"], desc:"センスがいいです。美しいものに敏感で、見た目にこだわりがあります。アートやファッション、空間など、感性を生かした分野が得意です。" },
+  { name:"畢宿", kana:"ひつしゅく", tags:["実行力","頑固さ","一途"], desc:"決めたら突き進みます。融通が利かない面もありますが、それが一途さでもあります。信頼した相手にはとことん誠実です。" },
+  { name:"觜宿", kana:"ししゅく", tags:["知的","話し上手","好奇心旺盛"], desc:"話していて面白い方です。知識の引き出しが多くて、会話の幅が広いです。好奇心が旺盛で、いろんなことに興味を持てます。" },
+  { name:"参宿", kana:"さんしゅく", tags:["戦略家","負けず嫌い","勝負強い"], desc:"勝ちにこだわります。何かに取り組むとき、自然と戦略を考えてしまいます。負けず嫌いなのを自覚している方が多いです。" },
+  { name:"井宿", kana:"せいしゅく（井）", tags:["多才","飽き性","エネルギッシュ"], desc:"エネルギーが多くて、いくつものことを同時にこなせます。ただ、飽きやすいところもあって、常に新しい刺激を求めています。" },
+  { name:"鬼宿", kana:"きしゅく（鬼）", tags:["直感◎","霊的感性","ミステリアス"], desc:"直感が鋭いです。何かを感じ取る能力が強めで、説明できないけどわかる、ということが多いです。ミステリアスな雰囲気を持っています。" },
+  { name:"柳宿", kana:"りゅうしゅく", tags:["こだわり強め","繊細","芸術家気質"], desc:"細部にこだわります。人が気にしないような小さな違いに気づいてしまいます。繊細さが才能でもあり、しんどさにもなります。" },
+  { name:"星宿", kana:"せいしゅく（星）", tags:["華がある","目立つ","自己表現◎"], desc:"どこにいても目に入る方です。自分を表現することが好きで、人前でも臆せずにいられます。" },
+  { name:"張宿", kana:"ちょうしゅく", tags:["楽天的","包容力","人を癒す"], desc:"一緒にいると、なんか楽になる——そう思われやすい方です。明るくて、人を受け入れる懐の広さがあります。" },
+  { name:"翼宿", kana:"よくしゅく", tags:["理想主義","感受性◎","繊細"], desc:"理想が高いです。こうあってほしい、という気持ちが強く、現実とのギャップに傷つくこともあります。その感受性の深さが、この宿の豊かさです。" },
+  { name:"軫宿", kana:"しんしゅく（軫）", tags:["聴く力◎","誠実","縁の下の力持ち"], desc:"話を聴くのが上手です。人の話にちゃんと乗っかれる方です。誠実で、表に出ないところで周りを支えていることが多いです。" },
 ];
 
-// ─── 月齢データ ───
+// ════════════════════════════════
+// 宿曜相性データ（距離・11種類）
+// ════════════════════════════════
+// 宿曜の距離は「命・親・友・壊・成・危・安・衰・栄・胎・業」の11種
+// 自分の宿から相手の宿までの距離（0〜26）で決まる
+const KYORI_DATA = [
+  // diff=0
+  { id:"myo", name:"命", badge:"hana", label:"命（みょう）",
+    love:"同じ方向を向ける相手。深く理解し合えますが、同じ欠点も持つので注意が必要です。",
+    friend:"価値観が近く、自然体でいられます。長く続く縁になりやすいです。",
+    work:"息が合いやすいですが、同じ落とし穴にはまることも。補完し合える関係を意識しましょう。",
+    note:"「命」は自分と同じ宿。最も深く理解し合える存在です。" },
+  // diff=1
+  { id:"shin", name:"親", badge:"oya", label:"親（しん）",
+    love:"自然と仲良くなれる、居心地のいい相手です。恋愛に発展しやすい関係です。",
+    friend:"会うたびに気分が上がります。一緒にいると楽しいです。",
+    work:"コミュニケーションがスムーズで、チームワークが取りやすいです。",
+    note:"「親」は最も縁起がよい相性のひとつ。自然と引き合う関係です。" },
+  // diff=2
+  { id:"tomo", name:"友", badge:"tomo", label:"友（とも）",
+    love:"気楽に話せる相手。友達として始まって、深まりやすいです。",
+    friend:"一緒にいて肩が張りません。長く続く友人関係になりやすいです。",
+    work:"気兼ねなく意見が言えます。働きやすいです。",
+    note:"「友」は縁起がよい相性です。自然体で付き合えます。" },
+  // diff=3
+  { id:"e", name:"壊", badge:"ki", label:"壊（え）",
+    love:"惹かれ合いますが、すれ違いが起きやすいです。深くなるほど摩擦も大きくなります。",
+    friend:"刺激的な関係ですが、距離感を保つのが大切です。",
+    work:"切磋琢磨できますが、衝突しやすいです。ルール決めが重要です。",
+    note:"「壊」は注意が必要な相性。深入りするほど破壊的になることもあります。" },
+  // diff=4
+  { id:"sei", name:"成", badge:"ei", label:"成（せい）",
+    love:"一緒にいると成長できる相手。ただし関係が成立するまでに時間がかかることも。",
+    friend:"お互いを高め合えます。尊敬し合える関係です。",
+    work:"相乗効果が出やすいです。長期的な関係ほど価値が出ます。",
+    note:"「成」は縁起のよい相性。時間をかけて育てる関係です。" },
+  // diff=5
+  { id:"ki", name:"危", badge:"warn", label:"危（き）",
+    love:"刺激的ですが、不安定になりやすいです。感情の起伏が大きくなります。",
+    friend:"面白い関係ですが、波があります。",
+    work:"短期的なプロジェクトには向いていますが、長期的には疲れやすいです。",
+    note:"「危」はリスクのある相性です。注意しながら付き合いましょう。" },
+  // diff=6
+  { id:"an", name:"安", badge:"an", label:"安（あん）",
+    love:"安心できる穏やかな関係。刺激は少ないですが、長続きしやすいです。",
+    friend:"会うと気持ちが落ち着きます。癒される存在です。",
+    work:"安定して取り組めます。長期的な協力関係に向いています。",
+    note:"「安」は安定した縁起のよい相性。穏やかに長く続きます。" },
+  // diff=7
+  { id:"sui", name:"衰", badge:"sui", label:"衰（すい）",
+    love:"一緒にいると気力が下がりやすいです。依存関係になりやすいので注意です。",
+    friend:"自然と疎遠になりやすいです。",
+    work:"足を引っ張り合うことがあります。役割分担を明確にしましょう。",
+    note:"「衰」は難しい相性です。意識して距離を保つことが大切です。" },
+  // diff=8
+  { id:"ei", name:"栄", badge:"ei", label:"栄（えい）",
+    love:"相手から運を受け取れる関係。一緒にいると自分が輝きやすいです。",
+    friend:"相手のそばにいると良いことが起きやすいです。",
+    work:"相手がいると仕事がうまく回ります。積極的に組みましょう。",
+    note:"「栄」は縁起のよい相性。相手から繁栄を受け取れます。" },
+  // diff=9
+  { id:"tai", name:"胎", badge:"tai", label:"胎（たい）",
+    love:"新しい何かが生まれる可能性がある関係。化学反応が起きやすいです。",
+    friend:"一緒にいると新しいアイデアや展開が生まれます。",
+    work:"クリエイティブな協力関係に向いています。",
+    note:"「胎」は可能性を秘めた相性。新しいものを生み出せます。" },
+  // diff=10〜26
+  { id:"gyo", name:"業", badge:"gyo", label:"業（ごう）",
+    love:"深いカルマがある関係。強く引き合いますが、執着になりやすいです。",
+    friend:"不思議と縁が切れない相手。前世からのつながりを感じることも。",
+    work:"長い縁になりやすいですが、依存しないよう注意が必要です。",
+    note:"「業」は因縁の深い相性。意識して健全な距離感を保ちましょう。" },
+];
+
+// diff → 相性インデックスのマッピング（27宿の距離）
+function getDiffToKyori(diff) {
+  const map = [0,1,2,3,4,5,6,7,8,9, // 0-9
+               10,10,10,10,10,10,10,10, // 10-17 = 業
+               9,8,7,6,5,4,3,2,1]; // 18-26（逆回り）
+  return KYORI_DATA[map[diff] || 10];
+}
+
+// 月相データ
 const MOON_PHASES = [
-  { name:"新月",       icon:"🌑" },
-  { name:"繊月",       icon:"🌒" },
-  { name:"三日月",     icon:"🌒" },
-  { name:"上弦に向かう月", icon:"🌓" },
-  { name:"上弦の月",   icon:"🌓" },
-  { name:"十日夜",     icon:"🌔" },
-  { name:"十三夜月",   icon:"🌔" },
-  { name:"満月に近い", icon:"🌕" },
-  { name:"満月",       icon:"🌕" },
-  { name:"十六夜",     icon:"🌖" },
-  { name:"立待月",     icon:"🌖" },
-  { name:"居待月",     icon:"🌗" },
-  { name:"下弦の月",   icon:"🌗" },
-  { name:"有明月",     icon:"🌘" },
+  {name:"新月",icon:"🌑"},{name:"繊月",icon:"🌒"},{name:"三日月",icon:"🌒"},
+  {name:"上弦に向かう月",icon:"🌓"},{name:"上弦の月",icon:"🌓"},{name:"十日夜",icon:"🌔"},
+  {name:"十三夜月",icon:"🌔"},{name:"満月に近い",icon:"🌕"},{name:"満月",icon:"🌕"},
+  {name:"十六夜",icon:"🌖"},{name:"立待月",icon:"🌖"},{name:"居待月",icon:"🌗"},
+  {name:"下弦の月",icon:"🌗"},{name:"有明月",icon:"🌘"},
 ];
 
-// ─── 正確な宿曜計算（旧暦・月宿傍通暦ベース）───
-// 宿曜の本命宿は「旧暦の生年月日」から月宿傍通暦で求めるのが正式な方法。
-// 旧暦変換には Meeus式の朔（新月）計算 + 冬至朔を11月とする天保暦方式を採用。
-
+// ════════════════════════════════
+// 旧暦変換・宿算出（月宿傍通暦）
+// ════════════════════════════════
 function newMoonJD(k) {
   const T = k / 1236.85;
   let JDE = 2451550.09766 + 29.530588861*k + 0.00015437*T*T;
@@ -753,20 +483,13 @@ function newMoonJD(k) {
        - 0.00017*Math.sin(Om);
   return JDE;
 }
-
 function gregorianToJD(y, m, d, hUTC) {
   hUTC = (hUTC !== undefined) ? hUTC : 12;
   if (m <= 2) { y--; m += 12; }
   const A = Math.floor(y/100), B = 2 - A + Math.floor(A/4);
   return Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(m+1)) + d + B - 1524.5 + hUTC/24;
 }
-
-// JST基準の「日」シリアル番号（0時を日の始まりとする）
-function jdToJSTDay(jd) {
-  return Math.floor(jd + 9/24 - 0.5);
-}
-
-// 太陽黄経（冬至=270°の特定に使用）
+function jdToJSTDay(jd) { return Math.floor(jd + 9/24 - 0.5); }
 function getSolarLon(jd) {
   const T = (jd - 2451545.0) / 36525;
   const L0 = 280.46646 + 36000.76983*T;
@@ -774,8 +497,6 @@ function getSolarLon(jd) {
   const raw = L0 + (1.914602 - 0.004817*T)*Math.sin(M) + 0.019993*Math.sin(2*M);
   return ((raw % 360) + 360) % 360;
 }
-
-// target_jd以前の最後の朔 {k, jd} を返す
 function getSakuBefore(jd) {
   const tDay = jdToJSTDay(jd);
   const k0 = Math.round((jd - 2451550.09766) / 29.530588861);
@@ -786,8 +507,6 @@ function getSakuBefore(jd) {
   }
   return { k:bk, jd:bj };
 }
-
-// approxJD付近で太陽黄経が270°（冬至）を通過する朔のkを返す
 function findTojiK(approxJD) {
   const k0 = Math.round((approxJD - 2451550.09766) / 29.530588861);
   for (let dk = -3; dk <= 3; dk++) {
@@ -797,11 +516,7 @@ function findTojiK(approxJD) {
   }
   return null;
 }
-
-// 月宿傍通暦: 旧暦各月1日の宿インデックス（0=角宿…26=軫宿）
 const MONTH_BASE_IDX = {1:11,2:13,3:15,4:17,5:19,6:21,7:24,8:0,9:2,10:4,11:7,12:9};
-
-// グレゴリオ暦 → 旧暦{月,日} + 宿インデックス
 function calcLunarAndShuku(sy, sm, sd, shJST) {
   shJST = (shJST !== undefined) ? shJST : 12;
   const targetJD = gregorianToJD(sy, sm, sd, shJST - 9);
@@ -809,40 +524,72 @@ function calcLunarAndShuku(sy, sm, sd, shJST) {
   const { k: prevK, jd: prevJD } = getSakuBefore(targetJD);
   if (prevK === null) return null;
   const lunarDay = tDay - jdToJSTDay(prevJD) + 1;
-
-  // 冬至を含む朔 = 旧暦11月。prevK以下で最も近い(最大の)tojiKを選ぶ
   let tojiK = null;
   for (let yr = -2; yr <= 2; yr++) {
-    const tk = findTojiK(gregorianToJD(sy + yr, 12, 22));
-    if (tk !== null && tk <= prevK) {
-      if (tojiK === null || tk > tojiK) tojiK = tk;
-    }
+    const tk = findTojiK(gregorianToJD(sy+yr, 12, 22));
+    if (tk !== null && tk <= prevK) { if (tojiK===null || tk > tojiK) tojiK = tk; }
   }
   if (tojiK === null) return null;
-
   const diff = prevK - tojiK;
   const lunarMonth = ((11 + diff - 1) % 12) + 1;
   const shukuIdx = (MONTH_BASE_IDX[lunarMonth] + lunarDay - 1) % 27;
   return { lunarMonth, lunarDay, shukuIdx };
 }
-
-// 月齢（表示用）
 function getMoonAge(jd) {
   return ((jd - 2451551.259) % 29.53058867 + 29.53058867) % 29.53058867;
 }
+function isBoundaryDay(lunarDay) { return lunarDay === 1 || lunarDay >= 29; }
 
-// 境界チェック: 旧暦1日または月末（宿が変わる可能性が高い日）
-function isBoundaryDay(lunarDay) {
-  return lunarDay === 1 || lunarDay >= 29;
+// ════════════════════════════════
+// 状態管理
+// ════════════════════════════════
+let myShukuIdx = null;
+
+// ════════════════════════════════
+// セレクト初期化
+// ════════════════════════════════
+// 相性のいい宿TOP3を表示
+function renderGoodCompat(myIdx) {
+  // 「親(diff=1)」「友(diff=2)」「栄(diff=8)」の3つを特に相性良しとして表示
+  const goodDiffs = [1, 2, 8]; // 親・友・栄
+  const labels    = ['親（しん）', '友（とも）', '栄（えい）'];
+  const ranks     = ['相性◎ 親', '相性◎ 友', '相性◎ 栄'];
+
+  const list = document.getElementById('good-compat-list');
+  list.innerHTML = '';
+  goodDiffs.forEach((diff, i) => {
+    const idx = (myIdx + diff) % 27;
+    const s = SHUKU_DATA[idx];
+    const div = document.createElement('div');
+    div.className = 'good-compat-item';
+    div.innerHTML = `
+      <span class="good-compat-rank">${ranks[i]}</span>
+      <div class="good-compat-name">${s.name}</div>
+      <span class="good-compat-kana">${s.kana}</span>
+      <span class="good-compat-kyori">${labels[i]}</span>
+    `;
+    div.addEventListener('click', () => {
+      // 相性セクションのドロップダウンに自動セットして結果を出す
+      const ps = document.getElementById('partner-shuku');
+      ps.value = idx;
+      calcCompat();
+      document.getElementById('compat-section').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('compat-result').scrollIntoView({ behavior:'smooth', block:'nearest' });
+      }, 100);
+    });
+    list.appendChild(div);
+  });
+  document.getElementById('good-compat').style.display = 'block';
 }
 
-// ─── セレクト初期化 ───
 function initSelects() {
   const sy = document.getElementById('sel-year');
   const sm = document.getElementById('sel-month');
   const sd = document.getElementById('sel-day');
   const sh = document.getElementById('sel-hour');
   const smin = document.getElementById('sel-min');
+  const ps = document.getElementById('partner-shuku');
 
   const now = new Date();
   for (let y = 1930; y <= now.getFullYear(); y++) {
@@ -865,23 +612,26 @@ function initSelects() {
   }
   for (let h = 0; h <= 23; h++) {
     const o = document.createElement('option');
-    o.value = h;
-    o.textContent = String(h).padStart(2,'0') + '時';
+    o.value = h; o.textContent = String(h).padStart(2,'0') + '時';
     sh.appendChild(o);
   }
   for (let min = 0; min <= 59; min += 5) {
     const o = document.createElement('option');
-    o.value = min;
-    o.textContent = String(min).padStart(2,'0') + '分';
+    o.value = min; o.textContent = String(min).padStart(2,'0') + '分';
     if (min === 0) o.selected = true;
     smin.appendChild(o);
   }
-
-  // 時を選んだら分を有効化
   sh.addEventListener('change', () => {
     smin.disabled = (sh.value === '');
     if (sh.value === '') smin.value = '';
     document.getElementById('boundary-notice').classList.remove('show');
+  });
+
+  // 相手の宿セレクト
+  SHUKU_DATA.forEach((s, i) => {
+    const o = document.createElement('option');
+    o.value = i; o.textContent = s.name + '（' + s.kana + '）';
+    ps.appendChild(o);
   });
 }
 
@@ -892,122 +642,182 @@ function clearTime() {
   document.getElementById('boundary-notice').classList.remove('show');
 }
 
-// ─── 計算して表示 ───
+// ════════════════════════════════
+// 自分の宿を計算して表示
+// ════════════════════════════════
 function calcShuku() {
-  const y   = parseInt(document.getElementById('sel-year').value);
-  const m   = parseInt(document.getElementById('sel-month').value);
-  const d   = parseInt(document.getElementById('sel-day').value);
-  const hVal  = document.getElementById('sel-hour').value;
-  const minVal= document.getElementById('sel-min').value;
+  const y = parseInt(document.getElementById('sel-year').value);
+  const m = parseInt(document.getElementById('sel-month').value);
+  const d = parseInt(document.getElementById('sel-day').value);
+  const hVal = document.getElementById('sel-hour').value;
+  const minVal = document.getElementById('sel-min').value;
 
   const maxDay = new Date(y, m, 0).getDate();
-  if (d > maxDay) {
-    alert('その月には' + d + '日は存在しません。日付を確認してください。');
-    return;
-  }
+  if (d > maxDay) { alert('その月には' + d + '日は存在しません。'); return; }
 
   const hasTime = hVal !== '' && minVal !== '';
-  const shJST = hasTime
-    ? parseInt(hVal) + parseInt(minVal) / 60
-    : undefined;
+  const shJST = hasTime ? parseInt(hVal) + parseInt(minVal)/60 : undefined;
 
-  // ローディング表示
-  const btn = document.querySelector('.calc-btn');
-  btn.textContent = '計算中…';
-  btn.disabled = true;
+  const btn = document.getElementById('calc-btn');
+  btn.textContent = '計算中…'; btn.disabled = true;
   document.getElementById('result-box').classList.remove('show');
+  document.getElementById('compat-section').classList.remove('show');
 
-  // 非同期で実行してUIをブロックしない
   setTimeout(function() {
-  try {
+    try {
+      const result = calcLunarAndShuku(y, m, d, shJST);
+      if (!result) { alert('算出できませんでした。日付を確認してください。'); return; }
+      const { lunarMonth, lunarDay, shukuIdx } = result;
+      myShukuIdx = shukuIdx;
+      const s = SHUKU_DATA[shukuIdx];
 
-  // 旧暦変換 → 宿算出
-  const result = calcLunarAndShuku(y, m, d, shJST);
-  if (!result) {
-    alert('算出できませんでした。日付を確認してください。');
-    return;
-  }
-  const { lunarMonth, lunarDay, shukuIdx } = result;
-  const s = SHUKU_DATA[shukuIdx];
+      // 境界通知
+      const notice = document.getElementById('boundary-notice');
+      if (isBoundaryDay(lunarDay) && !hasTime) {
+        const prev = SHUKU_DATA[(shukuIdx-1+27)%27];
+        const next = SHUKU_DATA[(shukuIdx+1)%27];
+        notice.innerHTML = `⚠ 旧暦${lunarMonth}月${lunarDay}日は宿の切り替わり付近です。出生時間によって<strong>${prev.name}</strong>または<strong>${next.name}</strong>になる可能性があります。`;
+        notice.className = 'notice warn show';
+      } else if (hasTime) {
+        notice.innerHTML = `✓ 旧暦${lunarMonth}月${lunarDay}日として出生時間を考慮して計算しました。`;
+        notice.className = 'notice info show';
+      } else {
+        notice.innerHTML = `旧暦 ${lunarMonth}月${lunarDay}日をもとに算出しました。`;
+        notice.className = 'notice info show';
+      }
 
-  // 境界付近の通知（旧暦1日or月末 かつ 時間未入力）
-  const notice = document.getElementById('boundary-notice');
-  if (isBoundaryDay(lunarDay) && !hasTime) {
-    const prev = SHUKU_DATA[(shukuIdx - 1 + 27) % 27];
-    const next = SHUKU_DATA[(shukuIdx + 1) % 27];
-    notice.innerHTML = `⚠ 旧暦${lunarMonth}月${lunarDay}日は宿の切り替わり付近です。出生時間によって<strong>${prev.name}</strong>または<strong>${next.name}</strong>になる可能性があります。出生時間を入力するとより正確に算出できます。`;
-    notice.classList.add('show');
-  } else if (hasTime) {
-    notice.innerHTML = `✓ 旧暦${lunarMonth}月${lunarDay}日として出生時間を考慮して計算しました。`;
-    notice.classList.add('show');
-  } else {
-    notice.innerHTML = `旧暦 ${lunarMonth}月${lunarDay}日をもとに算出しました。`;
-    notice.classList.add('show');
-  }
+      // 月齢
+      const jd = gregorianToJD(y, m, d, (shJST !== undefined ? shJST : 12) - 9);
+      const moonAge = getMoonAge(jd);
+      const phase = MOON_PHASES[Math.min(Math.floor(moonAge / (29.53/14)), 13)];
 
-  // 月齢
-  const jdDisplay = gregorianToJD(y, m, d, (shJST !== undefined ? shJST : 12) - 9);
-  const moonAge = getMoonAge(jdDisplay);
-  const phaseIdx = Math.min(Math.floor(moonAge / (29.53 / 14)), 13);
-  const phase = MOON_PHASES[phaseIdx];
+      // 表示
+      document.getElementById('res-name').textContent = s.name;
+      document.getElementById('res-kana').textContent = s.kana;
+      document.getElementById('res-desc').textContent = s.desc;
+      document.getElementById('res-note').textContent = '';
 
-  // 表示
-  document.getElementById('res-name').textContent = s.name;
-  document.getElementById('res-kana').textContent = s.kana;
-  document.getElementById('res-desc').textContent = s.desc;
-  document.getElementById('res-note').textContent = s.note || '';
+      const badge = document.getElementById('res-time-badge');
+      if (hasTime) {
+        badge.textContent = `${String(parseInt(hVal)).padStart(2,'0')}:${String(parseInt(minVal)).padStart(2,'0')}（JST）を考慮 / 旧暦${lunarMonth}月${lunarDay}日`;
+        badge.className = 'result-time-badge with-time';
+      } else {
+        badge.textContent = `旧暦${lunarMonth}月${lunarDay}日（出生時間なし）`;
+        badge.className = 'result-time-badge no-time';
+      }
 
-  const badge = document.getElementById('res-time-badge');
-  if (hasTime) {
-    const hStr = String(parseInt(hVal)).padStart(2,'0');
-    const mStr = String(parseInt(minVal)).padStart(2,'0');
-    badge.textContent = `${hStr}:${mStr}（JST）を考慮 / 旧暦${lunarMonth}月${lunarDay}日`;
-    badge.className = 'result-time-badge with-time';
-  } else {
-    badge.textContent = `旧暦${lunarMonth}月${lunarDay}日（出生時間なし）`;
-    badge.className = 'result-time-badge no-time';
-  }
+      const tagsEl = document.getElementById('res-tags');
+      tagsEl.innerHTML = '';
+      s.tags.forEach(t => {
+        const span = document.createElement('span');
+        span.className = 'tag'; span.textContent = t;
+        tagsEl.appendChild(span);
+      });
 
-  const tagsEl = document.getElementById('res-tags');
+      document.getElementById('moon-phase-icon').textContent = phase.icon;
+      document.getElementById('moon-phase-name').textContent = phase.name + '（月齢 ' + Math.floor(moonAge) + '）';
+
+      const box = document.getElementById('result-box');
+      box.classList.remove('show'); void box.offsetWidth; box.classList.add('show');
+
+      // 相性TOP3を表示
+      renderGoodCompat(shukuIdx);
+
+      // 相性セクション表示
+      document.getElementById('partner-shuku').value = '';
+      document.getElementById('compat-result').classList.remove('show');
+      document.getElementById('compat-section').classList.add('show');
+
+    } catch(e) {
+      console.error(e);
+      alert('計算中にエラーが発生しました。');
+    } finally {
+      btn.textContent = '調べる'; btn.disabled = false;
+    }
+  }, 30);
+}
+
+// ════════════════════════════════
+// 相性計算
+// ════════════════════════════════
+function calcCompat() {
+  const partnerVal = document.getElementById('partner-shuku').value;
+  if (partnerVal === '' || myShukuIdx === null) return;
+
+  const partnerIdx = parseInt(partnerVal);
+  const diff = (partnerIdx - myShukuIdx + 27) % 27;
+  const kyori = getDiffToKyori(diff);
+
+  const badge = document.getElementById('kyori-badge');
+  badge.textContent = kyori.label;
+  badge.className = 'kyori-badge ' + kyori.badge;
+  document.getElementById('kyori-name').textContent =
+    SHUKU_DATA[myShukuIdx].name + ' × ' + SHUKU_DATA[partnerIdx].name;
+
+  document.getElementById('compat-love').textContent = kyori.love;
+  document.getElementById('compat-friend').textContent = kyori.friend;
+  document.getElementById('compat-work').textContent = kyori.work;
+  document.getElementById('compat-note').textContent = kyori.note;
+
+  const cr = document.getElementById('compat-result');
+  cr.classList.remove('show'); void cr.offsetWidth; cr.classList.add('show');
+}
+
+// ════════════════════════════════
+// 27宿グリッド生成
+// ════════════════════════════════
+function renderGrid() {
+  const grid = document.getElementById('shuku-grid');
+  SHUKU_DATA.forEach((s, i) => {
+    const div = document.createElement('div');
+    div.className = 'shuku-item';
+    div.style.cursor = 'pointer';
+    div.innerHTML = `<div class="shuku-item-name">${s.name}</div><div class="shuku-item-kana">${s.kana}</div><div class="shuku-item-keyword">${s.tags.join('　')}</div>`;
+    div.addEventListener('click', () => openPopup(i));
+    grid.appendChild(div);
+  });
+}
+
+// ポップアップ
+let popupShukuIdx = null;
+function openPopup(idx) {
+  const s = SHUKU_DATA[idx];
+  popupShukuIdx = idx;
+  document.getElementById('popup-name').textContent = s.name;
+  document.getElementById('popup-kana').textContent = s.kana;
+  document.getElementById('popup-desc').textContent = s.desc;
+  const tagsEl = document.getElementById('popup-tags');
   tagsEl.innerHTML = '';
   s.tags.forEach(t => {
     const span = document.createElement('span');
-    span.className = 'tag';
-    span.textContent = t;
+    span.className = 'tag'; span.textContent = t;
     tagsEl.appendChild(span);
   });
-
-  document.getElementById('moon-phase-icon').textContent = phase.icon;
-  document.getElementById('moon-phase-name').textContent = phase.name + '（月齢 ' + Math.floor(moonAge) + '）';
-
-  const box = document.getElementById('result-box');
-  box.classList.remove('show');
-  void box.offsetWidth;
-  box.classList.add('show');
-
-  } catch(e) {
-    console.error('宿曜計算エラー:', e);
-    alert('計算中にエラーが発生しました。日付を確認してください。');
-  } finally {
-    btn.textContent = '調べる';
-    btn.disabled = false;
-  }
-  }, 30); // 30ms後に実行（UIが先に更新される）
+  // 相性ボタンは自分の宿が出ているときだけ表示
+  const btn = document.getElementById('popup-compat-btn');
+  btn.style.display = (myShukuIdx !== null && idx !== myShukuIdx) ? 'block' : 'none';
+  document.getElementById('popup-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
-
-// ─── 27宿グリッド生成 ───
-function renderGrid() {
-  const grid = document.getElementById('shuku-grid');
-  SHUKU_DATA.forEach(s => {
-    const div = document.createElement('div');
-    div.className = 'shuku-item';
-    div.innerHTML = `
-      <div class="shuku-item-name">${s.name}</div>
-      <div class="shuku-item-kana">${s.kana}</div>
-      <div class="shuku-item-keyword">${s.tags.join('　')}</div>
-    `;
-    grid.appendChild(div);
-  });
+function closePopupDirect() {
+  document.getElementById('popup-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  popupShukuIdx = null;
+}
+function closePopup(e) {
+  if (e.target === document.getElementById('popup-overlay')) closePopupDirect();
+}
+function selectFromPopup() {
+  if (popupShukuIdx === null) return;
+  closePopupDirect();
+  // 相性セクションが開いていたら自動選択
+  const ps = document.getElementById('partner-shuku');
+  ps.value = popupShukuIdx;
+  calcCompat();
+  document.getElementById('compat-section').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('compat-result').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }, 100);
 }
 
 initSelects();
